@@ -69,7 +69,7 @@ void processInput(GLFWwindow* window) {
 int main() {
 	init();
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Mandelbrot Set", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Fractal Viewer", nullptr, nullptr);
 	if (!window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
