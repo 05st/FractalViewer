@@ -1,4 +1,4 @@
-This is just a simple C++/OpenGL application that renders a Mandelbrot Set.
+This is just a simple C++/OpenGL application that renders some fractals. Currently, you can render different Julia Sets and the Mandelbrot Set.
 Controls are displayed in the console when opening the application.
 
 Windows only.
