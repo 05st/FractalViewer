@@ -10,6 +10,7 @@ uniform vec2 windowSize;
 uniform bool mandelbrotMode;
 uniform vec2 j_c;
 uniform int max_iters;
+uniform bool cursor;
 
 float scale = 320.0;
 
@@ -63,7 +64,9 @@ void main() {
 		FragColor = vec4(hsv2rgb(vec3(color, 1.0f, 1.0f - color)).xyz, 1.0f);
 	}
 
-	if (sqrt(pow(float(gl_FragCoord.x - windowSize.x / 2.0), 2) + pow(float(gl_FragCoord.y - windowSize.y / 2.0), 2)) <= 2) {
-		FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	if (cursor) {
+		if (sqrt(pow(float(gl_FragCoord.x - windowSize.x / 2.0), 2) + pow(float(gl_FragCoord.y - windowSize.y / 2.0), 2)) <= 2) {
+			FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		}
 	}
 }
