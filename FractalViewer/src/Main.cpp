@@ -51,6 +51,15 @@ void sizeCallback(GLFWwindow* window, int width, int height) {
 	scr_height = height;
 }
 
+void scrollCallback(GLFWwindow* window, double x, double y) {
+	if (y > 0) {
+		zoom *= 1.1f;
+	}
+	else if (y < 0) {
+		zoom *= 0.9f;
+	}
+}
+
 void processInput(GLFWwindow* window) {
 	double mousePosX, mousePosY;
 	glfwGetCursorPos(window, &mousePosX, &mousePosY);
@@ -128,6 +137,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, sizeCallback);
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
