@@ -8,7 +8,7 @@
 #include <sstream>
 #include <thread>
 
-const unsigned int WIDTH = 1280, HEIGHT = 720;
+unsigned int scr_width = 1280, scr_height = 720;
 float x = 0.0f, y = 0.0f; // Panning
 float zoom = 1.0f;
 bool mandelbrotMode = true;
@@ -20,6 +20,12 @@ bool interpolate = false;
 float re_s = 0.0f, re_e = 0.0f;
 float im_s = 0.0f, im_e = 0.0f;
 float v = 0.0f;
+
+bool mouseDown = false;
+int prevMouseX = 0;
+int prevMouseY = 0;
+
+float scale = 320.0f;
 
 void init() {
 	glfwInit();
@@ -41,21 +47,44 @@ std::string readFile(std::string filePath) {
 
 void sizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+	scr_width = width;
+	scr_height = height;
 }
 
 void processInput(GLFWwindow* window) {
-	double x_change = 0.0f, y_change = 0.0f;
+	double mousePosX, mousePosY;
+	glfwGetCursorPos(window, &mousePosX, &mousePosY);
+	int x_change = 0.0f, y_change = 0.0f;
+
+	if (mouseDown) {
+		x_change -= ((int)mousePosX - prevMouseX);
+		y_change += ((int)mousePosY - prevMouseY);
+		prevMouseX = (int)mousePosX;
+		prevMouseY = (int)mousePosY;
+	}
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+		if (!mouseDown) {
+			mouseDown = true;
+			prevMouseX = mousePosX;
+			prevMouseY = mousePosY;
+		}
+	}
+	else {
+		mouseDown = false;
+	}
+	
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		x_change += 0.01f;
+		x_change += 10;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		x_change -= 0.01f;
+		x_change -= 10;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		y_change += 0.01f;
+		y_change += 10;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		y_change -= 0.01f;
+		y_change -= 10;
 	}
 	
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
@@ -90,7 +119,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 int main() {
 	init();
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Fractal Viewer", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(scr_width, scr_height, "Fractal Viewer", nullptr, nullptr);
 	if (!window) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -105,7 +134,7 @@ int main() {
 		return -1;
 	}
 
-	glViewport(0, 0, WIDTH, HEIGHT);
+	glViewport(0, 0, scr_width, scr_height);
 
 	std::string vsSource = readFile("src\\vertex.glsl");
 	std::string fsSource = readFile("src\\fragment.glsl");
@@ -176,10 +205,10 @@ int main() {
 
 	std::cout << "Fractal Viewer" << std::endl << std::endl;
 	std::cout << "Controls" << std::endl;
-	std::cout << "[Arrow Keys] Movement" << std::endl;
+	std::cout << "[Mouse Button 1 / Arrow Keys] Movement" << std::endl;
 	std::cout << "[Left Shift] Precise Movement" << std::endl;
-	std::cout << "[Z] Zoom In" << std::endl;
-	std::cout << "[X] Zoom Out" << std::endl;
+	std::cout << "[Scroll Up / Z] Zoom In" << std::endl;
+	std::cout << "[Scroll Down / X] Zoom Out" << std::endl;
 	std::cout << "[M] Mandelbrot Set" << std::endl;
 	std::cout << "[J] Julia Set" << std::endl;
 	std::cout << "[C] Toggle Cursor" << std::endl;
@@ -205,8 +234,8 @@ int main() {
 				std::cin >> n_x;
 				std::cout << "Imag: ";
 				std::cin >> n_y;
-				x = n_x;
-				y = n_y;
+				x = n_x * scale;
+				y = n_y * scale;
 			}
 			else if (input == 2) {
 				float n_z = 0.0f;
@@ -251,6 +280,7 @@ int main() {
 	int jcLocation = glGetUniformLocation(shaderProgram, "j_c");
 	int maxItersLocation = glGetUniformLocation(shaderProgram, "max_iters");
 	int cursorLocation = glGetUniformLocation(shaderProgram, "cursor");
+	int scaleLocation = glGetUniformLocation(shaderProgram, "scale");
 
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -288,6 +318,7 @@ int main() {
 		glUniform2f(jcLocation, j_re, j_im);
 		glUniform1i(maxItersLocation, max_iters);
 		glUniform1i(cursorLocation, (int)cursor);
+		glUniform1f(scaleLocation, scale);
 
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -296,7 +327,7 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
-		std::string posString = "(" + std::to_string(x) + " + " + std::to_string(y) + "i)";
+		std::string posString = "(" + std::to_string(((((x) / scr_width)) * scr_width) / scale) + " + " + std::to_string(((((y) / scr_height)) * scr_height) / scale) + "i)";
 		std::string zoomString = " [" + std::to_string(zoom) + "x]";
 
 		glfwSetWindowTitle(window, (std::string("Fractal Viewer ") + posString + zoomString).c_str());

@@ -11,8 +11,7 @@ uniform bool mandelbrotMode;
 uniform vec2 j_c;
 uniform int max_iters;
 uniform bool cursor;
-
-float scale = 320.0;
+uniform float scale;
 
 vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -23,8 +22,11 @@ vec3 hsv2rgb(vec3 c) {
 void main() {
 	int iterations = 0;
 
-	float c_re = (((gl_FragCoord.x / windowSize.x) - 0.5) * windowSize.x) / (scale * zoom) + pos.x;
-	float c_im = (((gl_FragCoord.y / windowSize.y) - 0.5) * windowSize.y) / (scale * zoom) + pos.y;
+	float c_re = ((((gl_FragCoord.x) / windowSize.x) - 0.5) * windowSize.x) / (scale * zoom);
+	float c_im = ((((gl_FragCoord.y) / windowSize.y) - 0.5) * windowSize.y) / (scale * zoom);
+
+	c_re += ((((pos.x) / windowSize.x)) * windowSize.x) / scale;
+	c_im += ((((pos.y) / windowSize.y)) * windowSize.y) / scale;
 
 	if (mandelbrotMode) {
 		// Mandelbrot Set
@@ -59,13 +61,16 @@ void main() {
 		FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	} else {
 		// float color = float(iterations);
-		float color = sqrt(float(iterations)) / sqrt(max_iters);
+		float color1 = sqrt(float(iterations)) / sqrt(max_iters);
+		float color2 = sqrt(float(iterations+10)) / sqrt(max_iters);
+		float color = mix(color1, color2, mod(sqrt(float(iterations)) / sqrt(max_iters), 1));
 		// float color = float(iterations) / max_iters;
 		FragColor = vec4(hsv2rgb(vec3(color, 1.0f, 1.0f - color)).xyz, 1.0f);
 	}
 
 	if (cursor) {
 		if (sqrt(pow(float(gl_FragCoord.x - windowSize.x / 2.0), 2) + pow(float(gl_FragCoord.y - windowSize.y / 2.0), 2)) <= 2) {
+
 			FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 	}
