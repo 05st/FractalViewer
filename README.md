@@ -1,7 +1,6 @@
-This is just a simple C++/OpenGL application that renders a Mandelbrot Set.
-
-Arrow keys to move around (hold shift for more precision), and Z / X to zoom in / zoom out respectively.
+This is just a simple C++/OpenGL application that renders some fractals. Currently, you can render different Julia Sets and the Mandelbrot Set.
+Controls are displayed in the console when opening the application.
 
 Windows only.
 
-![Image](https://cdn.discordapp.com/attachments/535602578755682305/793615157313536060/unknown.png)
+![Image](https://cdn.discordapp.com/attachments/294985689563398159/793899794589548554/unknown.png)
