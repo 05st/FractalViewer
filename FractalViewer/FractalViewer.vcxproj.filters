@@ -23,7 +23,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\vertex.glsl" />
-    <None Include="src\fragment.glsl" />
+    <None Include="resources\fragment.glsl" />
+    <None Include="resources\vertex.glsl" />
+    <None Include="src\mandelbrot.cl" />
   </ItemGroup>
 </Project>
