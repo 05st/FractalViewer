@@ -25,6 +25,5 @@
   <ItemGroup>
     <None Include="resources\fragment.glsl" />
     <None Include="resources\vertex.glsl" />
-    <None Include="src\mandelbrot.cl" />
   </ItemGroup>
 </Project>

@@ -93,7 +93,6 @@
   <ItemGroup>
     <None Include="resources\fragment.glsl" />
     <None Include="resources\vertex.glsl" />
-    <None Include="src\mandelbrot.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
